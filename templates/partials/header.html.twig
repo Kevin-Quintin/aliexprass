@@ -33,10 +33,11 @@
                 </div>
                 <div class="col-md-6">
                     <div class="text-center text-md-right">
-                           <ul class="header_list">
+                        <ul class="header_list">
                             <li><a href=""><i class="ti-control-shuffle"></i><span>Compare</span></a></li>
                             <li><a href=""><i class="ti-heart"></i><span>Wishlist</span></a></li>
                             {% if app.user %}
+                                <li><a href="{{path('account')}}"><i class="ti-user"></i><span>My account</span></a></li>
                                 <li><a href="{{path('app_logout')}}"><i class="ti-user"></i><span>Logout</span></a></li>
                             {% else %}
                                 <li><a href="{{path('app_login')}}"><i class="ti-user"></i><span>Login</span></a></li>
@@ -90,25 +91,34 @@
                             </form>
                         </div><div class="search_overlay"></div>
                     </li>
-                    <li class="dropdown cart_dropdown"><a class="nav-link cart_trigger" href="#" data-toggle="dropdown"><i class="linearicons-cart"></i><span class="cart_count">2</span></a>
+                    <li class="dropdown cart_dropdown"><a class="nav-link cart_trigger" href="#" data-toggle="dropdown"><i class="linearicons-cart"></i><span class="cart_count">
+                        {% if app.session.get('cart') %}
+                            {{app.session.get('cartData').data.quantity_cart}}
+                        {% else %}
+                            0
+                        {% endif %}
+                        
+                    </span></a>
                         <div class="cart_box dropdown-menu dropdown-menu-right">
                             <ul class="cart_list">
-                                <li>
-                                    <a href="#" class="item_remove"><i class="ion-close"></i></a>
-                                    <a href="#"><img src="https://placehold.it/300" alt="cart_thumb1">Variable product 001</a>
-                                    <span class="cart_quantity"> 1 x <span class="cart_amount"> <span class="price_symbole">$</span></span>78.00</span>
-                                </li>
-                                <li>
-                                    <a href="#" class="item_remove"><i class="ion-close"></i></a>
-                                    <a href="#"><img src="https://placehold.it/300" alt="cart_thumb1">Variable product 001</a>
-                                    <span class="cart_quantity"> 1 x <span class="cart_amount"> <span class="price_symbole">$</span></span>78.00</span>
-                                </li>
-                                
+                            {% if app.session.get('cart') %}
+                                {% for element in app.session.get('cartData').products %}
+                                    <li>
+                                        <a href="{{ path('cart_deleteAll', {'id': element.product.id}) }}" class="item_remove"><i class="ion-close"></i></a>
+                                        <a href="#"><img src="/assets/uploads/products/{{ element.product.image }}" alt="{{ element.product.image }}">{{ element.product.name }}</a>
+                                        <span class="cart_quantity"> {{ element.quantity }} x <span class="cart_amount"> <span class="price_symbole">$</span></span>{{ element.product.price/100 }}</span>
+                                    </li>
+                                {% endfor %}
                             </ul>
                             <div class="cart_footer">
-                                <p class="cart_total"><strong>Subtotal:</strong> <span class="cart_price"> <span class="price_symbole">$</span></span>159.00</p>
-                                <p class="cart_buttons"><a href="#" class="btn btn-fill-line rounded-0 view-cart">View Cart</a><a href="#" class="btn btn-fill-out rounded-0 checkout">Checkout</a></p>
+                                <p class="cart_total"><strong>Subtotal TTC : </strong> <span class="cart_price"> <span class="price_symbole">$</span></span>{{ app.session.get('cartData').data.subTotalTTC }}</p>
+                                <p class="cart_buttons"><a href="{{path('cart')}}" class="btn btn-fill-line rounded-0 view-cart">View Cart</a><a href="#" class="btn btn-fill-out rounded-0 checkout">Checkout</a></p>
                             </div>
+                                {% else %}
+                                    <li>Your cart is empty !</li>
+                                    </ul>
+                            {% endif %}
+                            </ul>
                         </div>
                     </li>
                 </ul>
